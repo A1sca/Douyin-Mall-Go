@@ -8,7 +8,6 @@ import (
 
 	"github.com/A1sca/Douyin-Mall-Go/app/api/biz/router"
 	"github.com/A1sca/Douyin-Mall-Go/app/api/conf"
-	"github.com/A1sca/Douyin-Mall-Go/app/api/rpc"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/middlewares/server/recovery"
 	"github.com/cloudwego/hertz/pkg/app/server"
@@ -27,7 +26,6 @@ import (
 func main() {
 	// init dal
 	// dal.Init()
-	rpc.InitClient()
 	address := conf.GetConf().Hertz.Address
 	h := server.New(server.WithHostPorts(address))
 

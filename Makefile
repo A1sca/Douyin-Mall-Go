@@ -96,7 +96,13 @@ gen-cart-server:
 	--idl ../../idl/cart.proto
 
 gen-cart-http:
-	@echo "gen-cart-http 待实现"
+	@cd app/api && \
+	cwgo server \
+	-I ../../idl \
+	--type HTTP \
+	--service api \
+	--module github.com/A1sca/Douyin-Mall-Go/app/api \
+	--idl ../../idl/api/api_cart.proto
 
 # ===============  order 模块 ===================
 .PHONY: gen-order-client gen-order-server gen-order-http

@@ -1,28 +1,28 @@
-package order
+package cart
 
 import (
 	"context"
 
 	"github.com/A1sca/Douyin-Mall-Go/app/api/biz/service"
 	"github.com/A1sca/Douyin-Mall-Go/app/api/biz/utils"
-	order "github.com/A1sca/Douyin-Mall-Go/app/api/hertz_gen/api/order"
+	cart "github.com/A1sca/Douyin-Mall-Go/app/api/hertz_gen/api/cart"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
 
-// PlaceOrder .
-// @router /v1/order/place [POST]
-func PlaceOrder(ctx context.Context, c *app.RequestContext) {
+// AddItem .
+// @router /v1/cart/add [POST]
+func AddItem(ctx context.Context, c *app.RequestContext) {
 	var err error
-	var req order.PlaceOrderReq
+	var req cart.AddItemReq
 	err = c.BindAndValidate(&req)
 	if err != nil {
 		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
 		return
 	}
 
-	resp := &order.PlaceOrderResp{}
-	resp, err = service.NewPlaceOrderService(ctx, c).Run(&req)
+	resp := &cart.AddItemResp{}
+	resp, err = service.NewAddItemService(ctx, c).Run(&req)
 	if err != nil {
 		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
 		return
@@ -31,19 +31,19 @@ func PlaceOrder(ctx context.Context, c *app.RequestContext) {
 	utils.SendSuccessResponse(ctx, c, consts.StatusOK, resp)
 }
 
-// ListOrder .
-// @router /v1/order/list/:user_id [GET]
-func ListOrder(ctx context.Context, c *app.RequestContext) {
+// GetCart .
+// @router /v1/cart/get/:user_id [GET]
+func GetCart(ctx context.Context, c *app.RequestContext) {
 	var err error
-	var req order.ListOrderReq
+	var req cart.GetCartReq
 	err = c.BindAndValidate(&req)
 	if err != nil {
 		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
 		return
 	}
 
-	resp := &order.ListOrderResp{}
-	resp, err = service.NewListOrderService(ctx, c).Run(&req)
+	resp := &cart.GetCartResp{}
+	resp, err = service.NewGetCartService(ctx, c).Run(&req)
 	if err != nil {
 		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
 		return
@@ -52,19 +52,19 @@ func ListOrder(ctx context.Context, c *app.RequestContext) {
 	utils.SendSuccessResponse(ctx, c, consts.StatusOK, resp)
 }
 
-// MarkOrderPaid .
-// @router /v1/order/markpaid [POST]
-func MarkOrderPaid(ctx context.Context, c *app.RequestContext) {
+// EmptyCart .
+// @router /v1/cart/empty/:user_id [POST]
+func EmptyCart(ctx context.Context, c *app.RequestContext) {
 	var err error
-	var req order.MarkOrderPaidReq
+	var req cart.EmptyCartReq
 	err = c.BindAndValidate(&req)
 	if err != nil {
 		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
 		return
 	}
 
-	resp := &order.MarkOrderPaidResp{}
-	resp, err = service.NewMarkOrderPaidService(ctx, c).Run(&req)
+	resp := &cart.EmptyCartResp{}
+	resp, err = service.NewEmptyCartService(ctx, c).Run(&req)
 	if err != nil {
 		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
 		return

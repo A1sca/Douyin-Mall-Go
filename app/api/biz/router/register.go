@@ -3,6 +3,7 @@
 package router
 
 import (
+	cart "github.com/A1sca/Douyin-Mall-Go/app/api/biz/router/cart"
 	order "github.com/A1sca/Douyin-Mall-Go/app/api/biz/router/order"
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
@@ -11,4 +12,6 @@ import (
 func GeneratedRegister(r *server.Hertz) {
 	//INSERT_POINT: DO NOT DELETE THIS LINE!
 	order.Register(r)
+
+	cart.Register(r)
 }

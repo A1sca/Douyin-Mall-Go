@@ -1,5 +1,10 @@
 # Douyin-Mall-Go
 
+## 飞书文档
+https://n1a5qckj12w.feishu.cn/wiki/YVpZwGbzZiSTcyk8VTbcGZv5ndf?from=from_copylink
+
+下面的README不再维护
+
 ## 项目初始化
 按照官方文档的idl, 对项目进行初始化
 

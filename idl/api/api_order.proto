@@ -24,7 +24,7 @@ message PlaceOrderReq {
 }
 
 message OrderItem {
-    api_cart.CartItem item = 1;
+  api.cart.CartItem item = 1;
   float cost = 2;
 }
 

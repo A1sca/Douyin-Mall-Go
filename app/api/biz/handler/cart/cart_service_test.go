@@ -1,4 +1,4 @@
-package order
+package cart
 
 import (
 	"bytes"
@@ -9,10 +9,10 @@ import (
 	"github.com/cloudwego/hertz/pkg/common/ut"
 )
 
-func TestPlaceOrder(t *testing.T) {
+func TestAddItem(t *testing.T) {
 	h := server.Default()
-	h.POST("/v1/order/place", PlaceOrder)
-	path := "/v1/order/place"                                 // todo: you can customize query
+	h.POST("/v1/cart/add", AddItem)
+	path := "/v1/cart/add"                                    // todo: you can customize query
 	body := &ut.Body{Body: bytes.NewBufferString(""), Len: 1} // todo: you can customize body
 	header := ut.Header{}                                     // todo: you can customize header
 	w := ut.PerformRequest(h.Engine, "POST", path, body, header)
@@ -24,10 +24,10 @@ func TestPlaceOrder(t *testing.T) {
 	// assert.DeepEqual(t, "null", string(resp.Body()))
 }
 
-func TestListOrder(t *testing.T) {
+func TestGetCart(t *testing.T) {
 	h := server.Default()
-	h.GET("/v1/order/list/:user_id", ListOrder)
-	path := "/v1/order/list/:user_id"                         // todo: you can customize query
+	h.GET("/v1/cart/get/:user_id", GetCart)
+	path := "/v1/cart/get/:user_id"                           // todo: you can customize query
 	body := &ut.Body{Body: bytes.NewBufferString(""), Len: 1} // todo: you can customize body
 	header := ut.Header{}                                     // todo: you can customize header
 	w := ut.PerformRequest(h.Engine, "GET", path, body, header)
@@ -39,10 +39,10 @@ func TestListOrder(t *testing.T) {
 	// assert.DeepEqual(t, "null", string(resp.Body()))
 }
 
-func TestMarkOrderPaid(t *testing.T) {
+func TestEmptyCart(t *testing.T) {
 	h := server.Default()
-	h.POST("/v1/order/markpaid", MarkOrderPaid)
-	path := "/v1/order/markpaid"                              // todo: you can customize query
+	h.POST("/v1/cart/empty/:user_id", EmptyCart)
+	path := "/v1/cart/empty/:user_id"                         // todo: you can customize query
 	body := &ut.Body{Body: bytes.NewBufferString(""), Len: 1} // todo: you can customize body
 	header := ut.Header{}                                     // todo: you can customize header
 	w := ut.PerformRequest(h.Engine, "POST", path, body, header)
