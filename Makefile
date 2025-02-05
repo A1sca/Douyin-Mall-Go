@@ -22,7 +22,32 @@ gen-auth-server:
 
 gen-auth-http:
 	@echo "gen-auth-http 待实现"
-	
+
+# ===============  user 模块 ===================
+.PHONY: gen-user-client gen-user-server gen-user-http
+
+gen-user-client:
+	@cd rpc_gen && \
+	cwgo client \
+	-I ../idl \
+	--type RPC \
+	--service user \
+	--module github.com/A1sca/Douyin-Mall-Go/rpc_gen \
+	--idl ../idl/user.proto
+
+gen-user-server:
+	@cd app/user && \
+	cwgo server \
+	-I ../../idl \
+	--type RPC \
+	--service user \
+	--module github.com/A1sca/Douyin-Mall-Go/app/user \
+	--pass "-use github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen" \
+	--idl ../../idl/user.proto
+
+gen-user-http:
+	@echo "gen-user-http 待实现"
+
 
 # ===============  order 模块 ===================
 .PHONY: gen-order-client gen-order-server gen-order-http
