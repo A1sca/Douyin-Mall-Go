@@ -1,0 +1,87 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"net"
+
+	pb "go/src/Product01/Product-server/proto"
+
+	"google.golang.org/grpc"
+)
+
+type server struct {
+	pb.UnimplementedProductCatalogServiceServer
+	Products []*pb.Product
+}
+
+// ListProducts 返回分页的产品列表
+func (s *server) ListProducts(ctx context.Context, req *pb.ListProductsReq) (*pb.ListProductsResp, error) {
+	start := (req.Page - 1) * int32(req.PageSize)
+	end := start + int32(req.PageSize)
+	if end > int32(len(s.Products)) {
+		end = int32(len(s.Products))
+	}
+
+	// 如果提供了分类名称，过滤产品
+	var filteredProducts []*pb.Product
+	if req.CategoryName != "" {
+		for _, product := range s.Products {
+			for _, category := range product.Categories {
+				if category == req.CategoryName {
+					filteredProducts = append(filteredProducts, product)
+					break
+				}
+			}
+		}
+	} else {
+		filteredProducts = s.Products[start:end]
+	}
+
+	return &pb.ListProductsResp{Products: filteredProducts}, nil
+}
+
+// GetProduct 根据 ID 返回单个产品
+func (s *server) GetProduct(ctx context.Context, req *pb.GetProductReq) (*pb.GetProductResp, error) {
+	for _, product := range s.Products {
+		if product.Id == req.Id {
+			return &pb.GetProductResp{Product: product}, nil
+		}
+	}
+	return nil, fmt.Errorf("未找到产品")
+}
+
+// SearchProducts 根据查询字符串搜索产品
+func (s *server) SearchProducts(ctx context.Context, req *pb.SearchProductsReq) (*pb.SearchProductsResp, error) {
+	var results []*pb.Product
+	for _, product := range s.Products {
+		if product.Name == req.Query || product.Description == req.Query {
+			results = append(results, product)
+		}
+	}
+	return &pb.SearchProductsResp{Results: results}, nil
+}
+func main() {
+
+	s := &server{
+		Products: []*pb.Product{
+			{Id: 1, Name: "笔记本电脑", Description: "高性能笔记本电脑", Price: 999.99, Categories: []string{"电子产品", "电脑"}},
+			{Id: 2, Name: "智能手机", Description: "最新款智能手机", Price: 699.99, Categories: []string{"电子产品", "手机"}},
+			{Id: 3, Name: "耳机", Description: "降噪耳机", Price: 199.99, Categories: []string{"电子产品", "音频设备"}},
+		},
+	}
+
+	// 启动 gRPC 服务器
+	lis, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Fatalf("监听失败: %v", err)
+	}
+	grpcServer := grpc.NewServer()
+	pb.RegisterProductCatalogServiceServer(grpcServer, s)
+	log.Printf("服务器正在监听 %v", lis.Addr())
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalf("服务启动失败: %v", err)
+	}
+
+}
