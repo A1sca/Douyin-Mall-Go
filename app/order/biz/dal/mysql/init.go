@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"github.com/A1sca/Douyin-Mall-Go/app/order/biz/model"
 	"github.com/A1sca/Douyin-Mall-Go/app/order/conf"
 
 	"gorm.io/driver/mysql"
@@ -19,6 +20,10 @@ func Init() {
 			SkipDefaultTransaction: true,
 		},
 	)
+	if err != nil {
+		panic(err)
+	}
+	err = DB.AutoMigrate(&model.Order{})
 	if err != nil {
 		panic(err)
 	}
