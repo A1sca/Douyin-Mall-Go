@@ -15,3 +15,5 @@
 需要框架和中间件：
 GPRC
 GORM
+Kitex
+Mysql
