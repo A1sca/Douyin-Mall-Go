@@ -3,5 +3,11 @@ go 1.23.4
 use (
 	./app/api
 	./app/order
+	./app/user
+	./app/auth
+	./app/cart
+	./app/checkout
+	./app/payment
+	./app/product
 	./rpc_gen
 )
