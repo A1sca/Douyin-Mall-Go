@@ -1,42 +1,30 @@
-.PHONY: gen-frontend gen-frontend-home gen-frontend-auth
+# ===============  order 模块 ===================
+.PHONY: gen-order-client gen-order-server gen-order-http
 
-gen-frontend-home:
-	@cd app/frontend && \
-	cwgo server \
-	-I ../../idl \
-	--type HTTP \
-	--service frontend \
-	--module github.com/A1sca/Douyin-Mall-Go/app/frontend \
-	--idl ../../idl/frontend/home.proto
-
-gen-frontend-auth:
-	@cd app/frontend && \
-	cwgo server \
-	-I ../../idl \
-	--type HTTP \
-	--service frontend \
-	--module github.com/A1sca/Douyin-Mall-Go/app/frontend \
-	--idl ../../idl/frontend/auth_page.proto
-
-gen-frontend: gen-frontend-auth gen-frontend-home
-
-.PHONY: gen-user-client gen-user-server
-
-gen-user-client:
+gen-order-client:
 	@cd rpc_gen && \
 	cwgo client \
 	-I ../idl \
 	--type RPC \
-	--service user \
+	--service order \
 	--module github.com/A1sca/Douyin-Mall-Go/rpc_gen \
-	--idl ../idl/user.proto
+	--idl ../idl/order.proto
 
-gen-user-server:
-	@cd app/user && \
+gen-order-server:
+	@cd app/order && \
 	cwgo server \
 	-I ../../idl \
 	--type RPC \
-	--service user \
-	--module github.com/A1sca/Douyin-Mall-Go/app/user \
+	--service order \
+	--module github.com/A1sca/Douyin-Mall-Go/app/order \
 	--pass "-use github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen" \
-	--idl ../../idl/user.proto
+	--idl ../../idl/order.proto
+
+gen-order-http:
+	@cd app/api && \
+	cwgo server \
+	-I ../../idl \
+	--type HTTP \
+	--service api \
+	--module github.com/A1sca/Douyin-Mall-Go/app/api \
+	--idl ../../idl/api/api_order.proto

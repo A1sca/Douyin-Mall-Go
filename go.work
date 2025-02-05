@@ -1,7 +1,7 @@
 go 1.23.4
 
 use (
-	./app/frontend
-	./app/user
+	./app/api
+	./app/order
 	./rpc_gen
 )

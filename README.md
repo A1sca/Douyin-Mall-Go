@@ -20,3 +20,29 @@
 2. consul在哪个端口? 这个根据自己的docker compose看.
 3. 服务运行在哪个端口? conf下面的yaml文件里配置
 4. main.go默认不执行dal的init, 需要自己添加
+
+## 订单服务模块
+运行在端口8084
+1. 修改conf的mysql dsn
+2. main.go里面添加dal.Init(), mysql的Init()中, augomigrate新增表
+3. main.go的kitexInit()中, 向注册中心注册服务
+4. 指定服务的名字为 order, 需要修改配置文件. main.go的模版代码已经读取了这个配置
+
+```yaml
+kitex:
+  service: "order"
+```
+
+```go
+opts = append(opts, server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{
+    ServiceName: conf.GetConf().Kitex.Service,
+}))
+```
+
+
+## api
+运行在端口8080
+1. 运行makefile, 生成模版代码
+2. conf的yaml文件添加consul的地址, conf.go的Hertz配置添加一个新成员: 注册中心地址
+3. 添加一个rpc包, 用于初始化各个rpc服务
+4. 初始化rpc服务的时候, 需要指定rpc服务的名字, 怎么知道这个名字?? (服务端的配置文件可以指定服务名字)
