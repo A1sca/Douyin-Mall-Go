@@ -1,6 +1,6 @@
 kitex:
-  service: "auto"
-  address: ":8888"
+  service: "auth"
+  address: ":8081"
   log_level: info
   log_file_name: "log/kitex.log"
   log_max_size: 10

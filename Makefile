@@ -15,7 +15,7 @@ gen-auth-server:
 	cwgo server \
 	-I ../../idl \
 	--type RPC \
-	--service auto \
+	--service auth \
 	--module github.com/A1sca/Douyin-Mall-Go/app/auth \
 	--pass "-use github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen" \
 	--idl ../../idl/auth.proto
