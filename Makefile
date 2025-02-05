@@ -179,7 +179,7 @@ gen-payment-server:
 gen-payment-http:
 	@echo "gen-payment-http 待实现"
 
-# ===========================
+# ============= 生成所有模版代码 ==============
 .PHONY: gen-client gen-server gen-http
 
 gen-client: gen-auth-client gen-user-client gen-product-client gen-cart-client gen-order-client gen-checkout-client gen-payment-client 
