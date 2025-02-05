@@ -10,11 +10,11 @@ service AuthService {
 }
 
 message DeliverTokenReq {
-    int32  user_id= 0;
+    int32  user_id = 0;
 }
 
 message VerifyTokenReq {
-    string token = "emtp";
+    string token = "emtpy";
 }
 
 message DeliveryResp {
