@@ -41,6 +41,12 @@ func Create(ctx context.Context, db *gorm.DB, order *Order) error {
 	return db.WithContext(ctx).Create(order).Error
 }
 
+func GetOrderListByUserId(ctx context.Context, db *gorm.DB, userId uint32) (orders []Order, err error) {
+	// err = db.Model(&Order{}).Where(&Order{UserId: userId}).Preload("OrderItems").Find(&orders).Error
+	err = db.Model(&Order{}).Where("user_id = ?", userId).Find(&orders).Error
+	return
+}
+
 // OrderItemList is a wrapper around []OrderItem for custom serialization.
 type OrderItemList []OrderItem
 
