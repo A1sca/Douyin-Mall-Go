@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package api.order;
+
+import "api/api.proto";
+import "api/api_cart.proto";
+
+option go_package = "api/order";
+
+message Address {
+  string street_address = 1;
+  string city = 2;
+  string state = 3;
+  string country = 4;
+  int32 zip_code = 5;
+}
+
+message PlaceOrderReq {
+  uint32 user_id = 1 [(api.form) = "user_id"];
+  string user_currency = 2 [(api.form) = "user_currency"];
+  Address address = 3 [(api.form) = "address"];
+  string email = 4 [(api.form) = "email"];
+  repeated OrderItem order_items = 5 [(api.form) = "order_items"];
+}
+
+message OrderItem {
+  api.cart.CartItem item = 1;
+  float cost = 2;
+}
+
+message OrderResult { string order_id = 1; }
+
+message PlaceOrderResp { OrderResult order = 1; }
+
+message ListOrderReq { uint32 user_id = 1 [(api.path) = "user_id"]; }
+
+message Order {
+  repeated OrderItem order_items = 1;
+  string order_id = 2;
+  uint32 user_id = 3;
+  string user_currency = 4;
+  Address address = 5;
+  string email = 6;
+}
+
+message ListOrderResp { repeated Order orders = 1; }
+
+message MarkOrderPaidReq {
+  uint32 user_id = 1 [(api.form) = "user_id"];
+  string order_id = 2 [(api.form) = "order_id"];
+}
+
+message MarkOrderPaidResp {}
+
+service OrderRouter {
+  rpc PlaceOrder(PlaceOrderReq) returns (PlaceOrderResp) {
+    option (api.post) = "/v1/order/place";
+  }
+
+  rpc ListOrder(ListOrderReq) returns (ListOrderResp) {
+    option (api.get) = "/v1/order/list/:user_id";
+  }
+
+  rpc MarkOrderPaid(MarkOrderPaidReq) returns (MarkOrderPaidResp) {
+    option (api.post) = "/v1/order/markpaid";
+  }
+}
