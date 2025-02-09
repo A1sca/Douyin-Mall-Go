@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	api_cart "github.com/A1sca/Douyin-Mall-Go/app/api/hertz_gen/api/cart"
 	api_order "github.com/A1sca/Douyin-Mall-Go/app/api/hertz_gen/api/order"
@@ -21,13 +20,8 @@ func NewListOrderService(Context context.Context, RequestContext *app.RequestCon
 }
 
 func (h *ListOrderService) Run(req *api_order.ListOrderReq) (resp *api_order.ListOrderResp, err error) {
-	//defer func() {
-	// hlog.CtxInfof(h.Context, "req = %+v", req)
-	// hlog.CtxInfof(h.Context, "resp = %+v", resp)
-	//}()
-	// todo edit your code
 	userId := req.UserId
-	fmt.Println("用户id: ", userId)
+	// fmt.Println("用户id: ", userId)
 	rpc_resp, err := rpc.OrderService.ListOrder(h.Context, &rpc_order.ListOrderReq{
 		UserId: userId,
 	})

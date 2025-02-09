@@ -20,7 +20,6 @@ func NewListOrderService(ctx context.Context) *ListOrderService {
 	return &ListOrderService{ctx: ctx}
 }
 
-// Run create note info
 // 根据用户id, 得到对应的订单列表
 func (s *ListOrderService) Run(req *order.ListOrderReq) (resp *order.ListOrderResp, err error) {
 	// TODO: 检查用户是否存在
