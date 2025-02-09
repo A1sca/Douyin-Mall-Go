@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	order "github.com/A1sca/Douyin-Mall-Go/app/api/hertz_gen/api/order"
 	"github.com/A1sca/Douyin-Mall-Go/app/api/rpc"
@@ -22,17 +21,12 @@ func NewPlaceOrderService(Context context.Context, RequestContext *app.RequestCo
 }
 
 func (h *PlaceOrderService) Run(req *order.PlaceOrderReq) (resp *order.PlaceOrderResp, err error) {
-	//defer func() {
-	// hlog.CtxInfof(h.Context, "req = %+v", req)
-	// hlog.CtxInfof(h.Context, "resp = %+v", resp)
-	//}()
-	// todo edit your code
-	fmt.Println("运行Place Order")
-	fmt.Println(req.UserId)
-	fmt.Println(req.UserCurrency)
-	fmt.Println(req.Address)
-	fmt.Println(req.Email)
-	fmt.Println(req.OrderItems)
+	// fmt.Println("运行Place Order")
+	// fmt.Println(req.UserId)
+	// fmt.Println(req.UserCurrency)
+	// fmt.Println(req.Address)
+	// fmt.Println(req.Email)
+	// fmt.Println(req.OrderItems)
 	orderItems := make([]*rpc_order.OrderItem, len(req.OrderItems))
 	for i, item := range req.OrderItems {
 		orderItems[i] = fromApiOrderItem(item)
