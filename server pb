@@ -882,3 +882,4 @@ func file_rule_proto_init() {
 	file_rule_proto_goTypes = nil
 	file_rule_proto_depIdxs = nil
 }
+
