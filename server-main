@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 
-	pb "go/src/Product01/Product-server/proto"
+	pb "src/DouYin-Mall-GO/Product-server/protos"
 
 	"google.golang.org/grpc"
 )
@@ -14,16 +14,58 @@ import (
 type server struct {
 	pb.UnimplementedProductCatalogServiceServer
 	Products []*pb.Product
+	nextID   uint32
+}
+
+// CreateProduct 创建商品
+func (s *server) CreateProduct(ctx context.Context, req *pb.CreateProductReq) (*pb.CreateProductResp, error) {
+	s.nextID++
+	product := &pb.Product{
+		Id:          s.nextID,
+		Name:        req.Name,
+		Description: req.Description,
+		Price:       req.Price,
+		Categories:  req.Categories,
+	}
+	s.Products = append(s.Products, product)
+	return &pb.CreateProductResp{Id: s.nextID}, nil
+}
+
+// DeleteProduct 删除商品
+func (s *server) DeleteProduct(ctx context.Context, req *pb.DeleteProductReq) (*pb.DeleteProductResp, error) {
+	for i, product := range s.Products {
+		if product.Id == req.Id {
+			s.Products = append(s.Products[:i], s.Products[i+1:]...)
+			return &pb.DeleteProductResp{Success: true}, nil
+		}
+	}
+	return &pb.DeleteProductResp{Success: false}, nil
+}
+
+// UpdateProduct 更新商品
+func (s *server) UpdateProduct(ctx context.Context, req *pb.UpdateProductReq) (*pb.UpdateProductResp, error) {
+	for _, product := range s.Products {
+		if product.Id == req.Id {
+			product.Name = req.Name
+			product.Description = req.Description
+			product.Price = req.Price
+			product.Categories = req.Categories
+			return &pb.UpdateProductResp{Success: true}, nil
+		}
+	}
+	return &pb.UpdateProductResp{Success: false}, nil
 }
 
 // ListProducts 返回分页的产品列表
 func (s *server) ListProducts(ctx context.Context, req *pb.ListProductsReq) (*pb.ListProductsResp, error) {
 	start := (req.Page - 1) * int32(req.PageSize)
 	end := start + int32(req.PageSize)
+	if start < 0 {
+		start = 0
+	}
 	if end > int32(len(s.Products)) {
 		end = int32(len(s.Products))
 	}
-
 	// 如果提供了分类名称，过滤产品
 	var filteredProducts []*pb.Product
 	if req.CategoryName != "" {
@@ -35,10 +77,18 @@ func (s *server) ListProducts(ctx context.Context, req *pb.ListProductsReq) (*pb
 				}
 			}
 		}
+		// 对过滤后的产品进行分页
+		if start < int32(len(filteredProducts)) {
+			if end > int32(len(filteredProducts)) {
+				end = int32(len(filteredProducts))
+			}
+			filteredProducts = filteredProducts[start:end]
+		} else {
+			filteredProducts = []*pb.Product{}
+		}
 	} else {
 		filteredProducts = s.Products[start:end]
 	}
-
 	return &pb.ListProductsResp{Products: filteredProducts}, nil
 }
 
@@ -56,22 +106,33 @@ func (s *server) GetProduct(ctx context.Context, req *pb.GetProductReq) (*pb.Get
 func (s *server) SearchProducts(ctx context.Context, req *pb.SearchProductsReq) (*pb.SearchProductsResp, error) {
 	var results []*pb.Product
 	for _, product := range s.Products {
-		if product.Name == req.Query || product.Description == req.Query {
+		if containsString(product.Name, req.Query) || containsString(product.Description, req.Query) {
 			results = append(results, product)
 		}
 	}
 	return &pb.SearchProductsResp{Results: results}, nil
 }
-func main() {
 
+// containsString 辅助函数，检查字符串中是否包含子字符串
+func containsString(str, substr string) bool {
+	// 简单实现，可根据需求优化
+	for i := 0; i <= len(str)-len(substr); i++ {
+		if str[i:i+len(substr)] == substr {
+			return true
+		}
+	}
+	return false
+}
+
+func main() {
 	s := &server{
 		Products: []*pb.Product{
 			{Id: 1, Name: "笔记本电脑", Description: "高性能笔记本电脑", Price: 999.99, Categories: []string{"电子产品", "电脑"}},
 			{Id: 2, Name: "智能手机", Description: "最新款智能手机", Price: 699.99, Categories: []string{"电子产品", "手机"}},
 			{Id: 3, Name: "耳机", Description: "降噪耳机", Price: 199.99, Categories: []string{"电子产品", "音频设备"}},
 		},
+		nextID: 3,
 	}
-
 	// 启动 gRPC 服务器
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
@@ -83,5 +144,4 @@ func main() {
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("服务启动失败: %v", err)
 	}
-
 }
