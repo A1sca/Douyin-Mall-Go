@@ -55,3 +55,10 @@ opts = append(opts, server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{
 2. conf的yaml文件添加consul的地址, conf.go的Hertz配置添加一个新成员: 注册中心地址
 3. 添加一个rpc包, 用于初始化各个rpc服务
 4. 初始化rpc服务的时候, 需要指定rpc服务的名字, 怎么知道这个名字?? (服务端的配置文件可以指定服务名字)
+
+
+
+
+# 商品模块实现
+> 运行在端口50051中
+1.增加了原未存在但建议实现的增删改查的接口
