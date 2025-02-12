@@ -1,4 +1,4 @@
-Douyin-Mall-Go
+#Douyin-Mall-Go
 商品模块实现
 > 运行在端口50051中
 1.先生成模板代码
