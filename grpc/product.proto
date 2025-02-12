@@ -1,0 +1,95 @@
+syntax = "proto3"; // 使用 protobuf 版本 3
+
+
+option go_package = "github.com/A1sca/Douyin-Mall-Go/grpc;product"; // 生成的 Go 代码的包路径
+
+// 定义服务
+service ProductCatalogService {
+  rpc CreateProduct(CreateProductReq) returns (CreateProductResp) {} // 创建商品
+  rpc DeleteProduct(DeleteProductReq) returns (DeleteProductResp) {} // 删除商品
+  rpc UpdateProduct(UpdateProductReq) returns (UpdateProductResp) {} // 更新商品
+  rpc ListProducts(ListProductsReq) returns (ListProductsResp) {} // 获取产品列表
+  rpc GetProduct(GetProductReq) returns (GetProductResp) {} // 获取单个产品
+  rpc SearchProducts(SearchProductsReq) returns (SearchProductsResp) {} // 搜索产品
+}
+
+
+// 创建商品的请求
+message CreateProductReq {
+  string name = 1; // 商品名称
+  string description = 2; // 商品描述
+  float price = 3; // 商品价格
+  repeated string categories = 4; // 商品分类
+}
+
+// 创建商品的响应
+message CreateProductResp {
+  uint32 id = 1; // 商品 ID
+}
+
+// 删除商品的请求
+message DeleteProductReq {
+  uint32 id = 1; // 商品 ID
+}
+
+// 删除商品的响应
+message DeleteProductResp {
+  bool success = 1; // 是否成功
+}
+
+// 更新商品的请求
+message UpdateProductReq {
+  uint32 id = 1; // 商品 ID
+  string name = 2; // 商品名称
+  string description = 3; // 商品描述
+  float price = 4; // 商品价格
+  repeated string categories = 5; // 商品分类
+}
+
+// 更新商品的响应
+message UpdateProductResp {
+  bool success = 1; // 是否成功
+}
+
+// 获取产品列表的请求
+message ListProductsReq {
+  int32 page = 1; // 页码
+  int64 pageSize = 2; // 每页大小
+  string categoryName = 3; // 分类名称（可选）
+}
+
+// 产品信息
+message Product {
+  uint32 id = 1; // 产品 ID
+  string name = 2; // 产品名称
+  string description = 3; // 产品描述
+  string picture = 4; // 产品图片
+  float price = 5; // 产品价格
+  repeated string categories = 6; // 产品分类列表
+}
+
+// 获取产品列表的响应
+message ListProductsResp {
+  repeated Product products = 1; // 产品列表
+}
+
+// 获取单个产品的请求
+message GetProductReq {
+  uint32 id = 1; // 产品 ID
+}
+
+// 获取单个产品的响应
+message GetProductResp {
+  Product product = 1; // 产品信息
+}
+
+// 搜索产品的请求
+message SearchProductsReq {
+  string query = 1; // 查询字符串
+}
+
+// 搜索产品的响应
+message SearchProductsResp {
+  repeated Product results = 1; // 搜索结果列表
+}
+
