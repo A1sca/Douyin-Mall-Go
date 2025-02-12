@@ -2,101 +2,120 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
-	"net"
+	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	pb "DouYin-Mall-GO/Product-client/proto"
 )
 
-type productCatalogServer struct {
-	pb.UnimplementedProductCatalogServiceServer
-	products map[uint32]*pb.Product
-	nextID   uint32
+type ProductClient struct {
+	conn   *grpc.ClientConn
+	client pb.ProductCatalogServiceClient
 }
 
 // 初始化服务
-func newProductCatalogServer() *productCatalogServer {
-	return &productCatalogServer{
-		products: make(map[uint32]*pb.Product),
-		nextID:   1,
-	}
+func NewProductClient(serverAddr string) (*ProductClient, error) {
+    conn, err := grpc.Dial(serverAddr, grpc.WithInsecure())
+    if err != nil {
+        return nil, err
+    }
+    client := pb.NewProductCatalogServiceClient(conn)
+    return &ProductClient{
+        conn:   conn,
+        client: client,
+    }, nil
+}
+
+func (c *ProductClient) Close() {
+	c.conn.Close()
 }
 
 // CreateProduct 实现创建商品方法
-func (s *productCatalogServer) CreateProduct(ctx context.Context, req *pb.CreateProductReq) (*pb.CreateProductResp, error) {
-	id := s.nextID
-	s.nextID++
-	product := &pb.Product{
-		Id:          id,
-		Name:        req.Name,
-		Description: req.Description,
-		Price:       req.Price,
-		Categories:  req.Categories,
+func (c *ProductClient) CreateProduct(name, description string, price float32, categories []string) (uint32, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	resp, err := c.client.CreateProduct(ctx, &pb.CreateProductReq{
+		Name:        name,
+		Description: description,
+		Price:       price,
+		Categories:  categories,
+	})
+	if err != nil {
+		return 0, err
 	}
-	s.products[id] = product
-	return &pb.CreateProductResp{Id: id}, nil
+	return resp.Id, nil
 }
 
 // DeleteProduct 实现删除商品方法
-func (s *productCatalogServer) DeleteProduct(ctx context.Context, req *pb.DeleteProductReq) (*pb.DeleteProductResp, error) {
-	if _, exists := s.products[req.Id]; exists {
-		delete(s.products, req.Id)
-		return &pb.DeleteProductResp{Success: true}, nil
-	}
-	return &pb.DeleteProductResp{Success: false}, nil
+func (c *ProductClient) DeleteProduct(id uint32) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	_, err := c.client.DeleteProduct(ctx, &pb.DeleteProductReq{Id: id})
+	return err
 }
 
 // UpdateProduct 实现更新商品方法
-func (s *productCatalogServer) UpdateProduct(ctx context.Context, req *pb.UpdateProductReq) (*pb.UpdateProductResp, error) {
-	if product, exists := s.products[req.Id]; exists {
-		product.Name = req.Name
-		product.Description = req.Description
-		product.Price = req.Price
-		product.Categories = req.Categories
-		return &pb.UpdateProductResp{Success: true}, nil
-	}
-	return &pb.UpdateProductResp{Success: false}, nil
+func (c *ProductClient) UpdateProduct(id uint32, name, description string, price float32, categories []string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	_, err := c.client.UpdateProduct(ctx, &pb.UpdateProductReq{
+		Id:          id,
+		Name:        name,
+		Description: description,
+		Price:       price,
+		Categories:  categories,
+	})
+	return err
 }
 
 // ListProducts 实现获取产品列表方法
-func (s *productCatalogServer) ListProducts(ctx context.Context, req *pb.ListProductsReq) (*pb.ListProductsResp, error) {
-	var products []*pb.Product
-	for _, product := range s.products {
-		if req.CategoryName == "" || contains(product.Categories, req.CategoryName) {
-			products = append(products, product)
-		}
+func (c *ProductClient) ListProducts(page int32, pageSize int64) ([]*pb.Product, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	resp, err := c.client.ListProducts(ctx, &pb.ListProductsReq{
+		Page:     page,
+		PageSize: pageSize,
+	})
+	if err != nil {
+		return nil, err
 	}
-	start := int(req.Page) * int(req.PageSize)
-	end := start + int(req.PageSize)
-	if start > len(products) {
-		products = []*pb.Product{}
-	} else if end > len(products) {
-		products = products[start:]
-	} else {
-		products = products[start:end]
-	}
-	return &pb.ListProductsResp{Products: products}, nil
+	return resp.Products, nil
 }
 
 // GetProduct 实现获取单个产品方法
-func (s *productCatalogServer) GetProduct(ctx context.Context, req *pb.GetProductReq) (*pb.GetProductResp, error) {
-	if product, exists := s.products[req.Id]; exists {
-		return &pb.GetProductResp{Product: product}, nil
+func (c *ProductClient) GetProduct(id uint32) (*pb.Product, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	resp, err := c.client.GetProduct(ctx, &pb.GetProductReq{Id: id})
+	if err != nil {
+		if status, ok := status.FromError(err); ok && status.Code() == codes.NotFound {
+			return nil, fmt.Errorf("product %d not found", id)
+		}
+		return nil, err
 	}
-	return &pb.GetProductResp{Product: nil}, nil
+	return resp.Product, nil
 }
 
 // SearchProducts 实现搜索产品方法
-func (s *productCatalogServer) SearchProducts(ctx context.Context, req *pb.SearchProductsReq) (*pb.SearchProductsResp, error) {
-	var results []*pb.Product
-	for _, product := range s.products {
-		if containsString(product.Name, req.Query) || containsString(product.Description, req.Query) {
-			results = append(results, product)
-		}
+func (c *ProductClient) SearchProducts(query string) ([]*pb.Product, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	resp, err := c.client.SearchProducts(ctx, &pb.SearchProductsReq{Query: query})
+	if err != nil {
+		return nil, err
 	}
-	return &pb.SearchProductsResp{Results: results}, nil
+	return resp.Results, nil
 }
 
 // 辅助函数：检查切片中是否包含某个元素
@@ -120,17 +139,82 @@ func containsString(str, substr string) bool {
 	return false
 }
 func main() {
-	// 创建 gRPC 服务器
-	lis, err := net.Listen("tcp", ":50051")
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	s := grpc.NewServer()
 	// 注册服务
-	server := newProductCatalogServer()
-	pb.RegisterProductCatalogServiceServer(s, server)
-	log.Println("Server is listening on port 50051")
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+	client, err := NewProductClient("localhost:50051")
+	if err != nil {
+		log.Fatalf("客户端创建失败: %v", err)
 	}
+	defer client.Close()
+
+	// 测试用例
+	testProduct := &struct {
+		Name        string
+		Description string
+		Price       float32
+		Categories  []string
+	}{
+		Name:        "刷子",
+		Description: "用来清洁的用品",
+		Price:       9.9,
+		Categories:  []string{"工具", "清洁工具"},
+	}
+
+	// 创建商品
+	id, err := client.CreateProduct(
+		testProduct.Name,
+		testProduct.Description,
+		testProduct.Price,
+		testProduct.Categories,
+	)
+	if err != nil {
+		log.Fatalf("创建商品失败: %v", err)
+	}
+	log.Printf("创建的商品 ID: %d", id)
+
+	// 获取商品详情
+	product, err := client.GetProduct(id)
+	if err != nil {
+		log.Fatalf("获取商品失败: %v", err)
+	}
+	log.Printf("商品详情:\n%+v", product)
+
+	// 更新商品
+	newPrice := float32(5.9)
+	err = client.UpdateProduct(
+		id,
+		product.Name,
+		product.Description,
+		newPrice,
+		product.Categories,
+	)
+	if err != nil {
+		log.Fatalf("更新商品失败: %v", err)
+	}
+	log.Println("刷新成功")
+
+	// 搜索商品
+	results, err := client.SearchProducts("刷子")
+	if err != nil {
+		log.Fatalf("搜索失败: %v", err)
+	}
+	log.Printf("搜索结果 (%d 项):", len(results))
+	for _, p := range results {
+		log.Printf("- %s ($%.2f)", p.Name, p.Price)
+	}
+
+	// 列出商品
+	products, err := client.ListProducts(1, 10)
+	if err != nil {
+		log.Fatalf("陈列商品无效: %v", err)
+	}
+	log.Printf("第一页商品 (%d 项):", len(products))
+	for _, p := range products {
+		log.Printf("- %s ($%.2f)", p.Name, p.Price)
+	}
+
+	// 删除商品
+	if err := client.DeleteProduct(id); err != nil {
+		log.Fatalf("删除该商品失败: %v", err)
+	}
+	log.Println("该商品删除成功")
 }
