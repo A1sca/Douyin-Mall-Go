@@ -61,4 +61,6 @@ opts = append(opts, server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{
 
 # 商品模块实现
 > 运行在端口50051中
-1.增加了原未存在但建议实现的增删改查的接口
+1.先生成模板代码
+2.构建数据模型
+3.编写业务
