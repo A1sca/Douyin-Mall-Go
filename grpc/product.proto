@@ -1,7 +1,7 @@
 syntax = "proto3"; // 使用 protobuf 版本 3
 
 
-option go_package = "github.com/A1sca/Douyin-Mall-Go/grpc;product"; // 生成的 Go 代码的包路径
+option go_package = ".;grpc"; // 生成的 Go 代码的包路径
 
 // 定义服务
 service ProductCatalogService {
