@@ -49,3 +49,8 @@ func GetById(ctx context.Context, db *gorm.DB, id string) (*User, error) {
 	err := db.WithContext(ctx).Where("user_id = ?", id).Find(&user).Error
 	return &user, err
 }
+
+func DeleteById(ctx context.Context, db *gorm.DB, id string) (error) {
+	err := db.WithContext(ctx).Delete(User{}, "user_id = ?", id)
+	return err.Error
+}
