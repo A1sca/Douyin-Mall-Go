@@ -17,6 +17,7 @@ func NewLogoutService(ctx context.Context) *LogoutService {
 
 // Run create note info
 func (s *LogoutService) Run(req *user.LogoutReq) (resp *user.LogoutResp, err error) {
+	// TODO: 移除token
 	resp = &user.LogoutResp{
 		UserId: req.UserId,
 	}

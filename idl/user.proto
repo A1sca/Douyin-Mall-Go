@@ -54,6 +54,7 @@ message UpdateReq {
 message UpdateResp {
     string user_id = 1;
 }
+
 service UserService {
     // rpc RegisterByPhone(RegisterByPhoneReq) returns(RegisterResp) {}
     rpc Register(RegisterReq) returns(RegisterResp) {}
@@ -66,3 +67,4 @@ service UserManageService {
     rpc Delete(DeleteReq) returns(DeleteResp) {}
     rpc Update(UpdateReq) returns(UpdateResp) {}
 }
+

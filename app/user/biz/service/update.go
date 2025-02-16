@@ -14,7 +14,7 @@ func NewUpdateService(ctx context.Context) *UpdateService {
 
 // Run create note info
 func (s *UpdateService) Run(req *user.UpdateReq) (resp *user.UpdateResp, err error) {
-	// Finish your business logic.
+	
 
 	return
 }
