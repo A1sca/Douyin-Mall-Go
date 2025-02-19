@@ -37,6 +37,8 @@ message GetReq {
 
 message GetResp {
     string user_id = 1;
+    string user_name = 2;
+    string email = 3;
 }
 
 message DeleteReq {
@@ -44,15 +46,19 @@ message DeleteReq {
 }
 
 message DeleteResp {
-    string user_id = 1;
+    bool success = 1;
+    string message = 2;
 }
 
 message UpdateReq {
     string user_id = 1;
+    string user_name = 2;
+    string email = 3;
 }
 
 message UpdateResp {
-    string user_id = 1;
+    bool success = 1;
+    string message = 2;
 }
 
 service UserService {

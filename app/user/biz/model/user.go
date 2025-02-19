@@ -44,13 +44,40 @@ func GetByEmail(ctx context.Context, db *gorm.DB, email string) (*User, error) {
 	return &user, err
 }
 
+// GetById 通过ID获取用户
 func GetById(ctx context.Context, db *gorm.DB, id string) (*User, error) {
 	var user User
-	err := db.WithContext(ctx).Where("user_id = ?", id).Find(&user).Error
-	return &user, err
+	result := db.WithContext(ctx).Where("id = ?", id).First(&user)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, result.Error
+	}
+	return &user, nil
 }
 
-func DeleteById(ctx context.Context, db *gorm.DB, id string) (error) {
-	err := db.WithContext(ctx).Delete(User{}, "user_id = ?", id)
-	return err.Error
+// GetByName 通过用户名获取用户
+func GetByName(ctx context.Context, db *gorm.DB, username string) (*User, error) {
+	var user User
+	result := db.WithContext(ctx).Where("username = ?", username).First(&user)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, result.Error
+	}
+	return &user, nil
+}
+
+// DeleteById 通过ID删除用户
+func DeleteById(ctx context.Context, db *gorm.DB, id string) error {
+	result := db.WithContext(ctx).Where("id = ?", id).Delete(&User{})
+	return result.Error
+}
+
+// UpdateById 通过ID更新用户信息
+func UpdateById(ctx context.Context, db *gorm.DB, id string, updates *User) error {
+	result := db.WithContext(ctx).Model(&User{}).Where("id = ?", id).Updates(updates)
+	return result.Error
 }
