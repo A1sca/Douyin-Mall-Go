@@ -31,3 +31,16 @@ func Login(ctx context.Context, c *app.RequestContext) {
 
 	utils.SendSuccessResponse(ctx, c, consts.StatusOK, resp)
 }
+
+// Logout .
+// @router /auth/logout [POST]
+func Logout(ctx context.Context, c *app.RequestContext) {
+	// 登出不需要请求参数
+	resp, err := service.NewLogoutService(ctx, c).Run(&auth.LogoutReq{})
+	if err != nil {
+		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
+		return
+	}
+
+	utils.SendSuccessResponse(ctx, c, consts.StatusOK, resp)
+}

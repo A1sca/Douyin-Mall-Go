@@ -69,6 +69,10 @@ type LoginReq struct {
 	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty" form:"password"`
 }
 
+type LogoutReq struct {
+	
+}
+
 func (x *LoginReq) Reset() {
 	*x = LoginReq{}
 	if protoimpl.UnsafeEnabled {

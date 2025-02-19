@@ -14,8 +14,15 @@ message LoginReq {
     string password = 2 [(api.form)="password"]; 
 }
 
+message LogoutReq {
+    // 登出请求不需要任何参数
+}
+
 service AuthService {
    rpc login(LoginReq) returns(common.Empty) {
       option (api.post) = "/auth/login";
+   }
+   rpc logout(LogoutReq) returns(common.Empty) {
+      option (api.post) = "/auth/logout";
    }
 }

@@ -3,6 +3,9 @@
 package auth
 
 import (
+	"context"
+
+	"github.com/A1sca/Douyin-Mall-Go/app/frontend/biz/utils"
 	"github.com/cloudwego/hertz/pkg/app"
 )
 
@@ -12,11 +15,40 @@ func rootMw() []app.HandlerFunc {
 }
 
 func _authMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		func(ctx context.Context, c *app.RequestContext) {
+			sessionID := c.Cookie("session_id")
+			if len(sessionID) == 0 {
+				c.AbortWithStatus(401)
+				return
+			}
+
+			userID, err := utils.GetUserIDFromSession(ctx, string(sessionID))
+			if err != nil {
+				c.AbortWithStatus(401)
+				return
+			}
+
+			c.Set("user_id", userID)
+			c.Next(ctx)
+		},
+	}
 }
 
 func _loginMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		func(ctx context.Context, c *app.RequestContext) {
+			// 检查是否已经登录，如果已登录则重定向到首页
+			sessionID := c.Cookie("session_id")
+			if len(sessionID) > 0 {
+				userID, err := utils.GetUserIDFromSession(ctx, string(sessionID))
+				if err == nil && userID != "" {
+					c.Redirect(302, []byte("/"))
+					c.Abort()
+					return
+				}
+			}
+			c.Next(ctx)
+		},
+	}
 }
