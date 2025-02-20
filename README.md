@@ -48,8 +48,9 @@ opts = append(opts, server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{
 }))
 ```
 ## 支付和结算
-分别运行在8884和8885接口
-支付的数据库格式：
+支付和结算分别运行在8884和8885接口
+
+支付的数据库格式如下：
 ```MySQL
 create table payment
 (
@@ -65,8 +66,7 @@ create table payment
 );
 ```
 
-支付的运行
-终端1
+运行方式
 ```go
 sudo docker compose up
 ```
