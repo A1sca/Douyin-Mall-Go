@@ -47,6 +47,34 @@ opts = append(opts, server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{
     ServiceName: conf.GetConf().Kitex.Service,
 }))
 ```
+## 支付和结算
+分别运行在8884和8885接口
+支付的数据库格式：
+```MySQL
+create table payment
+(
+    id             int auto_increment,
+    user_id        int            not null,
+    order_id       varchar(100)   not null,
+    transaction_id varchar(100)   not null,
+    amount         decimal(10, 2) not null,
+    pay_at         datetime       not null,
+    created_at     datetime       not null default current_timestamp,
+    updated_at     datetime       not null default current_timestamp on update current_timestamp,
+    constraint payment_pk primary key (id)
+);
+```
+
+支付的运行
+终端1
+```go
+sudo docker compose up
+```
+在另一终端中运行
+```go
+go run .
+```
+结算的运行，要在其他功能运行之后
 
 
 ## api
