@@ -6,9 +6,16 @@ import (
 	"context"
 	"time"
 
+<<<<<<< HEAD:app/api/main.go
 	"github.com/A1sca/Douyin-Mall-Go/app/api/biz/router"
 	"github.com/A1sca/Douyin-Mall-Go/app/api/conf"
 	"github.com/A1sca/Douyin-Mall-Go/app/api/rpc"
+=======
+	"github.com/A1sca/Douyin-Mall-Go/app/frontend/biz/dal"
+	"github.com/A1sca/Douyin-Mall-Go/app/frontend/biz/router"
+	"github.com/A1sca/Douyin-Mall-Go/app/frontend/biz/service"
+	"github.com/A1sca/Douyin-Mall-Go/app/frontend/conf"
+>>>>>>> 9f755a66b20efc6d9f0d901289e4ed3c840a3dd8:app/frontend/main.go
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/middlewares/server/recovery"
 	"github.com/cloudwego/hertz/pkg/app/server"
@@ -26,8 +33,16 @@ import (
 
 func main() {
 	// init dal
+<<<<<<< HEAD:app/api/main.go
 	// dal.Init()
 	rpc.InitClient()
+=======
+	dal.Init()
+
+	// 初始化 RPC 客户端
+	service.InitRPCClients()
+
+>>>>>>> 9f755a66b20efc6d9f0d901289e4ed3c840a3dd8:app/frontend/main.go
 	address := conf.GetConf().Hertz.Address
 	h := server.New(server.WithHostPorts(address))
 
