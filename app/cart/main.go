@@ -2,21 +2,34 @@ package main
 
 import (
 	"net"
-	"time"
+	"strings"
 
-	"github.com/A1sca/Douyin-Mall-Go/app/cart/biz/dal"
-	"github.com/A1sca/Douyin-Mall-Go/app/cart/conf"
-	"github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/cart/cartservice"
+	"github.com/cloudwego/biz-demo/gomall/app/cart/biz/dal"
+	"github.com/cloudwego/biz-demo/gomall/app/cart/conf"
+	"github.com/cloudwego/biz-demo/gomall/app/cart/infra/rpc"
+	"github.com/cloudwego/biz-demo/gomall/common/mtl"
+	"github.com/cloudwego/biz-demo/gomall/common/serversuite"
+	"github.com/cloudwego/biz-demo/gomall/common/utils"
+	"github.com/cloudwego/biz-demo/gomall/rpc_gen/kitex_gen/cart/cartservice"
 	"github.com/cloudwego/kitex/pkg/klog"
-	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/server"
-	kitexlogrus "github.com/kitex-contrib/obs-opentelemetry/logging/logrus"
-	consul "github.com/kitex-contrib/registry-consul"
-	"go.uber.org/zap/zapcore"
+	"github.com/joho/godotenv"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
+var serviceName = conf.GetConf().Kitex.Service
+
 func main() {
+	_ = godotenv.Load()
+	mtl.InitLog(&lumberjack.Logger{
+		Filename:   conf.GetConf().Kitex.LogFileName,
+		MaxSize:    conf.GetConf().Kitex.LogMaxSize,
+		MaxBackups: conf.GetConf().Kitex.LogMaxBackups,
+		MaxAge:     conf.GetConf().Kitex.LogMaxAge,
+	})
+	mtl.InitTracing(serviceName)
+	mtl.InitMetric(serviceName, conf.GetConf().Kitex.MetricsPort, conf.GetConf().Registry.RegistryAddress[0])
+	rpc.InitClient()
 	dal.Init()
 	opts := kitexInit()
 
@@ -30,40 +43,17 @@ func main() {
 
 func kitexInit() (opts []server.Option) {
 	// address
-	addr, err := net.ResolveTCPAddr("tcp", conf.GetConf().Kitex.Address)
+	address := conf.GetConf().Kitex.Address
+	if strings.HasPrefix(address, ":") {
+		localIp := utils.MustGetLocalIPv4()
+		address = localIp + address
+	}
+	addr, err := net.ResolveTCPAddr("tcp", address)
 	if err != nil {
 		panic(err)
 	}
-	opts = append(opts, server.WithServiceAddr(addr))
-
-	// service info
-	opts = append(opts, server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{
-		ServiceName: conf.GetConf().Kitex.Service,
-	}))
-
-	// 服务注册
-	r, err := consul.NewConsulRegister(conf.GetConf().Registry.RegistryAddress[0])
-	if err != nil {
-		klog.Fatal(err)
-	}
-	opts = append(opts, server.WithRegistry(r))
-
-	// klog
-	logger := kitexlogrus.NewLogger()
-	klog.SetLogger(logger)
-	klog.SetLevel(conf.LogLevel())
-	asyncWriter := &zapcore.BufferedWriteSyncer{
-		WS: zapcore.AddSync(&lumberjack.Logger{
-			Filename:   conf.GetConf().Kitex.LogFileName,
-			MaxSize:    conf.GetConf().Kitex.LogMaxSize,
-			MaxBackups: conf.GetConf().Kitex.LogMaxBackups,
-			MaxAge:     conf.GetConf().Kitex.LogMaxAge,
-		}),
-		FlushInterval: time.Minute,
-	}
-	klog.SetOutput(asyncWriter)
-	server.RegisterShutdownHook(func() {
-		asyncWriter.Sync()
-	})
+	opts = append(opts,
+		server.WithServiceAddr(addr),
+		server.WithSuite(serversuite.CommonServerSuite{CurrentServiceName: serviceName, RegistryAddr: conf.GetConf().Registry.RegistryAddress[0]}))
 	return
 }
