@@ -2,10 +2,11 @@ package service
 
 import (
 	"context"
+	"strconv"
 	"testing"
-	
-	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/model"
+
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/dal/mysql"
+	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/model"
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/utils"
 	user "github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/user"
 	"github.com/stretchr/testify/assert"
@@ -21,9 +22,9 @@ func TestLogin_Run(t *testing.T) {
 	password := "testpassword"
 	hashedPassword, _ := utils.HashPassword(password)
 	testUser := &model.User{
-		Username: "testuser",
-		Password: hashedPassword,
-		Email:    "test@example.com",
+		Username:       "testuser",
+		PasswordHashed: hashedPassword,
+		Email:          "test@example.com",
 	}
 	err := model.Create(ctx, mysql.DB, testUser)
 	assert.Nil(t, err)
@@ -72,7 +73,7 @@ func TestLogin_Run(t *testing.T) {
 
 	// 测试清理
 	t.Log("清理测试数据...")
-	err = model.DeleteById(ctx, mysql.DB, testUser.ID)
+	err = model.DeleteById(ctx, mysql.DB, strconv.FormatUint(uint64(testUser.ID), 10))
 	assert.Nil(t, err)
 	t.Log("测试数据清理完成")
 

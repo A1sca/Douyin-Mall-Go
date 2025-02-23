@@ -3,12 +3,20 @@ package service
 import (
 	"context"
 	"testing"
+	"os"
+	"strconv"
 
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/model"
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/dal/mysql"
 	user "github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/user"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestMain(m *testing.M) {
+	mysql.Init()
+	code := m.Run()
+	os.Exit(code)
+}
 
 func TestDelete_Run(t *testing.T) {
 	ctx := context.Background()
@@ -24,13 +32,13 @@ func TestDelete_Run(t *testing.T) {
 	assert.Nil(t, err)
 
 	// 测试正常删除
-	req := &user.DeleteReq{UserId: testUser.ID}
+	req := &user.DeleteReq{UserId: strconv.FormatUint(uint64(testUser.ID), 10)}
 	resp, err := s.Run(req)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 
 	// 测试删除不存在的用户
-	req = &user.DeleteReq{UserId: 99999}
+	req = &user.DeleteReq{UserId: "99999"}
 	resp, err = s.Run(req)
 	assert.NotNil(t, err)
 }

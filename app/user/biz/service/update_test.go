@@ -2,10 +2,11 @@ package service
 
 import (
 	"context"
+	"strconv"
 	"testing"
 
-	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/model"
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/dal/mysql"
+	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/model"
 	user "github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/user"
 	"github.com/stretchr/testify/assert"
 )
@@ -25,7 +26,7 @@ func TestUpdate_Run(t *testing.T) {
 
 	// 测试正常更新
 	req := &user.UpdateReq{
-		UserId:   testUser.ID,
+		UserId:   strconv.FormatUint(uint64(testUser.ID), 10),
 		UserName: "updatedname",
 		Email:    "updated@example.com",
 	}
@@ -35,7 +36,7 @@ func TestUpdate_Run(t *testing.T) {
 
 	// 测试更新不存在的用户
 	req = &user.UpdateReq{
-		UserId:   99999,
+		UserId:   "99999",
 		UserName: "nonexistent",
 	}
 	resp, err = s.Run(req)
@@ -43,7 +44,7 @@ func TestUpdate_Run(t *testing.T) {
 
 	// 测试无效的更新数据
 	req = &user.UpdateReq{
-		UserId: testUser.ID,
+		UserId: strconv.FormatInt(int64(testUser.ID), 10),
 	}
 	resp, err = s.Run(req)
 	assert.Nil(t, err)

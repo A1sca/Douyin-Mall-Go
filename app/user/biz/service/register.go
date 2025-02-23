@@ -3,10 +3,11 @@ package service
 import (
 	"context"
 	"errors"
-	
-	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/utils"
-	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/model"
+	"strconv"
+
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/dal/mysql"
+	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/model"
+	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/utils"
 	user "github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/user"
 )
 
@@ -42,7 +43,7 @@ func (s *RegisterService) Run(req *user.RegisterReq) (resp *user.RegisterResp, e
 
 	newUser := &model.User{
 		Username: req.Username,
-		Password: hashedPassword,
+		PasswordHashed: hashedPassword,
 		Email:    req.Email,
 	}
 
@@ -52,13 +53,13 @@ func (s *RegisterService) Run(req *user.RegisterReq) (resp *user.RegisterResp, e
 	}
 
 	// 生成token
-	token, err := utils.GenerateToken(newUser.ID)
+	token, err := utils.GenerateToken(strconv.FormatInt(int64(newUser.ID), 10))
 	if err != nil {
 		return nil, err
 	}
 
 	return &user.RegisterResp{
-		UserId: newUser.ID,
+		UserId: strconv.FormatInt(int64(newUser.ID), 10),
 		Token:  token,
 	}, nil
 }

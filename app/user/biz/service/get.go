@@ -25,8 +25,14 @@ func (s *GetService) Run(req *user.GetReq) (resp *user.GetResp, err error) {
 	if err != nil {
 		return nil, err
 	}
-	s.ctx = context.WithValue(s.ctx, "data", data)
-	return &user.GetResp{}, nil
+	if data == nil {
+		return nil, errors.New("user not found")
+	}
+	return &user.GetResp{
+		UserId: strconv.FormatUint(uint64(data.ID), 10),
+		Username: data.Username,
+		Email: data.Email,
+	}, nil
 }
 
 // GetUser 获取用户信息

@@ -21,6 +21,16 @@ func NewDeleteService(ctx context.Context) *DeleteService {
 
 // Run create note info
 func (s *DeleteService) Run(req *user.DeleteReq) (resp *user.DeleteResp, err error) {
+	// 检查用户是否存在
+	data, err := model.GetById(s.ctx, mysql.DB, req.UserId)
+	if err != nil {
+		return nil, err
+	}
+	if data == nil {
+		return nil, errors.New("user not found")
+	}
+
+	// 执行删除操作
 	err = model.DeleteById(s.ctx, mysql.DB, req.UserId)
 	if err != nil {
 		return nil, err

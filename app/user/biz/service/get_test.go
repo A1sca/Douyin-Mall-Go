@@ -2,10 +2,11 @@ package service
 
 import (
 	"context"
+	"strconv"
 	"testing"
 
-	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/model"
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/dal/mysql"
+	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/model"
 	user "github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/user"
 	"github.com/stretchr/testify/assert"
 )
@@ -24,13 +25,13 @@ func TestGet_Run(t *testing.T) {
 	assert.Nil(t, err)
 
 	// 测试正常获取
-	req := &user.GetReq{UserId: testUser.ID}
+	req := &user.GetReq{UserId: strconv.FormatUint(uint64(testUser.ID), 10)}
 	resp, err := s.Run(req)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 
 	// 测试获取不存在的用户
-	req = &user.GetReq{UserId: 99999}
+	req = &user.GetReq{UserId: "99999"}
 	resp, err = s.Run(req)
 	assert.NotNil(t, err)
 }
