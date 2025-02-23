@@ -10,7 +10,7 @@ service ProductCatalogService {
   rpc SearchProducts(SearchProductsReq) returns (SearchProductsResp) {}
   rpc CreateProduct(CreateProductReq) returns (CreateProductResp) {}
   rpc UpdateProduct(UpdateProductReq) returns (UpdateProductResp) {}
-  rpc DeleteProduct(DeleteProductReq) returns (DeleteProductResq) {}
+  rpc DeleteProduct(DeleteProductReq) returns (DeleteProductResp) {}
 }
 
 message ListProductsReq{
