@@ -20,8 +20,6 @@ func NewUpdateService(ctx context.Context) *UpdateService {
 
 // Run create note info
 func (s *UpdateService) Run(req *user.UpdateReq) (resp *user.UpdateResp, err error) {
-	// 将 string 转换为 int64
-
 	// 检查用户是否存在
 	existingUser, err := model.GetById(s.ctx, mysql.DB, req.UserId)
 	if err != nil {

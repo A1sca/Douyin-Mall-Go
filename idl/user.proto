@@ -1,86 +1,97 @@
-syntax="proto3";
+syntax = "proto3";
 
 package user;
 
-option go_package="/user";
+option go_package = "user";
 
+// 用户服务
 service UserService {
-    rpc Register(RegisterReq) returns (RegisterResp) {}
-    rpc Login(LoginReq) returns (LoginResp) {}
+    // 用户注册
+    rpc Register(RegisterReq) returns (RegisterResp);
+    // 用户登录
+    rpc Login(LoginReq) returns (LoginResp);
+    // 用户登出
+    rpc Logout(LogoutReq) returns (LogoutResp);
+    // 获取用户信息
+    rpc Get(GetReq) returns (GetResp);
+    // 更新用户信息
+    rpc Update(UpdateReq) returns (UpdateResp);
+    // 删除用户
+    rpc Delete(DeleteReq) returns (DeleteResp);
 }
 
+// 注册请求
 message RegisterReq {
-    string email = 1;
+    string username = 1;
     string password = 2;
-    string confirm_password = 3;
+    string email = 3;
 }
 
+// 注册响应
 message RegisterResp {
-    int32 user_id = 1;
+    string user_id = 1;
+    string token = 2;
 }
 
+// 登录请求
 message LoginReq {
-    string email= 1;
+    string username = 1;
     string password = 2;
 }
 
+// 登录响应
 message LoginResp {
-<<<<<<< HEAD
-    int32 user_id = 1;
-}
-=======
     string user_id = 1;
+    string token = 2;
 }
 
+// 登出请求
 message LogoutReq {
     string user_id = 1;
 }
 
+// 登出响应
 message LogoutResp {
     string user_id = 1;
 }
 
+// 获取用户信息请求
 message GetReq {
     string user_id = 1;
 }
 
+// 获取用户信息响应
 message GetResp {
     string user_id = 1;
-    string user_name = 2;
+    string username = 2;
     string email = 3;
+    int32 gender = 4;
+    int32 age = 5;
+    string avatar = 6;
+    int32 balance = 7;
+    string desc = 8;
 }
 
-message DeleteReq {
-    string user_id = 1;
-}
-
-message DeleteResp {
-    bool success = 1;
-    string message = 2;
-}
-
+// 更新用户信息请求
 message UpdateReq {
     string user_id = 1;
     string user_name = 2;
     string email = 3;
+    int32 gender = 4;
+    int32 age = 5;
+    string avatar = 6;
+    string desc = 7;
 }
 
+// 更新用户信息响应
 message UpdateResp {
-    bool success = 1;
-    string message = 2;
 }
 
-service UserService {
-    // rpc RegisterByPhone(RegisterByPhoneReq) returns(RegisterResp) {}
-    rpc Register(RegisterReq) returns(RegisterResp) {}
-    rpc Login(LoginReq) returns(LoginResp) {}
-    rpc Logout(LogoutReq) returns(LogoutResp) {}
+// 删除用户请求
+message DeleteReq {
+    string user_id = 1;
 }
 
-service UserManageService {
-    rpc Get(GetReq) returns(GetResp) {}
-    rpc Delete(DeleteReq) returns(DeleteResp) {}
-    rpc Update(UpdateReq) returns(UpdateResp) {}
+// 删除用户响应
+message DeleteResp {
 }
-
->>>>>>> 9f755a66b20efc6d9f0d901289e4ed3c840a3dd8
