@@ -6,7 +6,7 @@ import (
 
 	"github.com/A1sca/Douyin-Mall-Go/app/api/biz/dal/mysql"
 	"github.com/A1sca/Douyin-Mall-Go/app/product/biz/models"
-	product "github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/product"
+	product "github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/product/kitex_gen"
 	"gorm.io/gorm"
 )
 
@@ -36,7 +36,7 @@ func (s *SearchProductsService) Run(req *product.SearchProductsReq) (resp *produ
 	// 它接收上下文和查询字符串作为参数，返回产品列表和错误
 	products, err := models.SearchProducts(s.ctx, s.db, query)
 	if err != nil {
-		return nil, fmt.Errorf("failed to search products: %w", err)
+		return nil, fmt.Errorf("未找到: %w", err)
 	}
 
 	// 将搜索到的产品转换为 ProtoBuf 定义的产品
