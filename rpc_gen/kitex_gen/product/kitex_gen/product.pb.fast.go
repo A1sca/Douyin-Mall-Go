@@ -479,6 +479,16 @@ func (x *UpdateProductResp) FastRead(buf []byte, _type int8, number int32) (offs
 		if err != nil {
 			goto ReadFieldError
 		}
+	case 3:
+		offset, err = x.fastReadField3(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 4:
+		offset, err = x.fastReadField4(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
 	default:
 		offset, err = fastpb.Skip(buf, _type, number)
 		if err != nil {
@@ -504,6 +514,16 @@ func (x *UpdateProductResp) fastReadField1(buf []byte, _type int8) (offset int, 
 
 func (x *UpdateProductResp) fastReadField2(buf []byte, _type int8) (offset int, err error) {
 	x.Error, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *UpdateProductResp) fastReadField3(buf []byte, _type int8) (offset int, err error) {
+	x.Success, offset, err = fastpb.ReadBool(buf, _type)
+	return offset, err
+}
+
+func (x *UpdateProductResp) fastReadField4(buf []byte, _type int8) (offset int, err error) {
+	x.Message, offset, err = fastpb.ReadString(buf, _type)
 	return offset, err
 }
 
@@ -896,6 +916,8 @@ func (x *UpdateProductResp) FastWrite(buf []byte) (offset int) {
 	}
 	offset += x.fastWriteField1(buf[offset:])
 	offset += x.fastWriteField2(buf[offset:])
+	offset += x.fastWriteField3(buf[offset:])
+	offset += x.fastWriteField4(buf[offset:])
 	return offset
 }
 
@@ -912,6 +934,22 @@ func (x *UpdateProductResp) fastWriteField2(buf []byte) (offset int) {
 		return offset
 	}
 	offset += fastpb.WriteString(buf[offset:], 2, x.GetError())
+	return offset
+}
+
+func (x *UpdateProductResp) fastWriteField3(buf []byte) (offset int) {
+	if !x.Success {
+		return offset
+	}
+	offset += fastpb.WriteBool(buf[offset:], 3, x.GetSuccess())
+	return offset
+}
+
+func (x *UpdateProductResp) fastWriteField4(buf []byte) (offset int) {
+	if x.Message == "" {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 4, x.GetMessage())
 	return offset
 }
 
@@ -1285,6 +1323,8 @@ func (x *UpdateProductResp) Size() (n int) {
 	}
 	n += x.sizeField1()
 	n += x.sizeField2()
+	n += x.sizeField3()
+	n += x.sizeField4()
 	return n
 }
 
@@ -1301,6 +1341,22 @@ func (x *UpdateProductResp) sizeField2() (n int) {
 		return n
 	}
 	n += fastpb.SizeString(2, x.GetError())
+	return n
+}
+
+func (x *UpdateProductResp) sizeField3() (n int) {
+	if !x.Success {
+		return n
+	}
+	n += fastpb.SizeBool(3, x.GetSuccess())
+	return n
+}
+
+func (x *UpdateProductResp) sizeField4() (n int) {
+	if x.Message == "" {
+		return n
+	}
+	n += fastpb.SizeString(4, x.GetMessage())
 	return n
 }
 
@@ -1405,6 +1461,8 @@ var fieldIDToName_UpdateProductReq = map[int32]string{
 var fieldIDToName_UpdateProductResp = map[int32]string{
 	1: "Product",
 	2: "Error",
+	3: "Success",
+	4: "Message",
 }
 
 var fieldIDToName_DeleteProductReq = map[int32]string{
