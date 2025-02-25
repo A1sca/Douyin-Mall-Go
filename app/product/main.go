@@ -9,7 +9,7 @@ import (
 	//"github.com/A1sca/Douyin-Mall-Go/app/order/biz/model"
 	"github.com/A1sca/Douyin-Mall-Go/app/product/biz/dal"
 	"github.com/A1sca/Douyin-Mall-Go/app/product/conf"
-	"github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/product/productcatalogservice"
+	"github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/product/kitex_gen/productcatalogservice"
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/server"
