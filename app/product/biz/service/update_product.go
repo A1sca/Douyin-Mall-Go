@@ -29,8 +29,8 @@ func (s *UpdateProductService) Run(req *product.UpdateProductReq) (resp *product
 	if err := s.db.Where("id = ?", req.Id).First(&productModel).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			// 如果未找到产品，返回错误响应
-			resp.success = false
-			resp.message = "产品不存在"
+			resp.Success = false
+			resp.Message = "产品不存在"
 			return resp, nil
 		}
 		return nil, err
