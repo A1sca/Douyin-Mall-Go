@@ -31,22 +31,20 @@ func (s *ProductCatalogServiceImpl) SearchProducts(ctx context.Context, req *pro
 	return resp, err
 }
 
-/*
-func (s *ProductCatalogServiceImpl) CreateProducts(ctx context.Context, req *product.SearchProductsReq) (resp *product.SearchProductsResp, err error) {
+func (s *ProductCatalogServiceImpl) CreateProduct(ctx context.Context, req *product.CreateProductReq) (resp *product.CreateProductResp, err error) {
 	resp, err = service.NewCreateProductService(ctx).Run(req)
 
 	return resp, err
 }
 
-func (s *ProductCatalogServiceImpl) UpdateProducts(ctx context.Context, req *product.SearchProductsReq) (resp *product.SearchProductsResp, err error) {
-	resp, err = service.NewUpdateProductsService(ctx).Run(req)
+func (s *ProductCatalogServiceImpl) UpdateProduct(ctx context.Context, req *product.UpdateProductReq) (resp *product.UpdateProductResp, err error) {
+	resp, err = service.NewUpdateProductService(ctx).Run(req)
 
 	return resp, err
 }
 
-func (s *ProductCatalogServiceImpl) DeleteProducts(ctx context.Context, req *product.SearchProductsReq) (resp *product.SearchProductsResp, err error) {
-	resp, err = service.NewDeleteProductsService(ctx).Run(req)
+func (s *ProductCatalogServiceImpl) DeleteProduct(ctx context.Context, req *product.DeleteProductReq) (resp *product.DeleteProductResp, err error) {
+	resp, err = service.NewDeleteProductService(ctx).Run(req)
 
 	return resp, err
 }
-*/
