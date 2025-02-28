@@ -1,11 +1,10 @@
 package dal
 
 import (
-	"github.com/A1sca/Douyin-Mall-Go/app/cart/biz/dal/mysql"
-	"github.com/A1sca/Douyin-Mall-Go/app/cart/biz/dal/redis"
+	"github.com/cloudwego/biz-demo/gomall/app/cart/biz/dal/mysql"
 )
 
 func Init() {
-	redis.Init()
+	// redis.Init()
 	mysql.Init()
 }
