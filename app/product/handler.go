@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	product "github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/product"
+
 	"github.com/A1sca/Douyin-Mall-Go/app/product/biz/service"
+	product "github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/product/kitex_gen"
 )
 
 // ProductCatalogServiceImpl implements the last service interface defined in the IDL.
@@ -26,6 +27,24 @@ func (s *ProductCatalogServiceImpl) GetProduct(ctx context.Context, req *product
 // SearchProducts implements the ProductCatalogServiceImpl interface.
 func (s *ProductCatalogServiceImpl) SearchProducts(ctx context.Context, req *product.SearchProductsReq) (resp *product.SearchProductsResp, err error) {
 	resp, err = service.NewSearchProductsService(ctx).Run(req)
+
+	return resp, err
+}
+
+func (s *ProductCatalogServiceImpl) CreateProduct(ctx context.Context, req *product.CreateProductReq) (resp *product.CreateProductResp, err error) {
+	resp, err = service.NewCreateProductService(ctx).Run(req)
+
+	return resp, err
+}
+
+func (s *ProductCatalogServiceImpl) UpdateProduct(ctx context.Context, req *product.UpdateProductReq) (resp *product.UpdateProductResp, err error) {
+	resp, err = service.NewUpdateProductService(ctx).Run(req)
+
+	return resp, err
+}
+
+func (s *ProductCatalogServiceImpl) DeleteProduct(ctx context.Context, req *product.DeleteProductReq) (resp *product.DeleteProductResp, err error) {
+	resp, err = service.NewDeleteProductService(ctx).Run(req)
 
 	return resp, err
 }

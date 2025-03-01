@@ -7,12 +7,12 @@ import (
 	product "github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/product/kitex_gen"
 )
 
-func TestGetProduct_Run(t *testing.T) {
+func TestUpdateProducts_Run(t *testing.T) {
 	ctx := context.Background()
-	s := NewGetProductService(ctx)
+	s := NewUpdateProductService(ctx)
 	// init req and assert value
 
-	req := &product.GetProductReq{}
+	req := &product.UpdateProductReq{}
 	resp, err := s.Run(req)
 	t.Logf("err: %v", err)
 	t.Logf("resp: %v", resp)
