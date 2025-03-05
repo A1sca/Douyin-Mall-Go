@@ -3,68 +3,64 @@ package service
 import (
 	"context"
 	"testing"
-	"os"
 	"strconv"
-
-	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/model"
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/dal/mysql"
-	user "github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/user"
+	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/model"
+	"github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/user"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMain(m *testing.M) {
-	mysql.Init()
-	code := m.Run()
-	os.Exit(code)
-}
-
 func TestDelete_Run(t *testing.T) {
+	t.Log("=== 开始测试用户删除服务 ===")
+
+	// 初始化上下文和服务
+	t.Log("初始化测试环境...")
 	ctx := context.Background()
 	s := NewDeleteService(ctx)
 
-	// 先创建一个测试用户
+	// 测试删除不存在的用户
+	t.Log("\n测试场景1: 删除不存在的用户")
+	req := &user.DeleteReq{
+		UserId: "99999",
+	}
+	t.Logf("请求参数: %+v", req)
+	resp, err := s.Run(req)
+	t.Logf("响应: %+v, 错误: %v", resp, err)
+	assert.Error(t, err)
+	assert.Equal(t, "user not found", err.Error())
+	assert.Nil(t, resp)
+	t.Log("预期的错误测试通过")
+
+	// 创建测试用户
+	t.Log("\n测试场景2: 创建测试用户")
 	testUser := &model.User{
 		Username: "deletetest",
 		Email:    "deletetest@example.com",
-		Phone:    "13800138001",
 	}
-	err := model.Create(ctx, mysql.DB, testUser)
-	assert.Nil(t, err)
+	t.Logf("创建用户信息: %+v", testUser)
+	err = model.Create(ctx, mysql.DB, testUser)
+	assert.NoError(t, err)
+	t.Logf("测试用户创建成功，ID=%d", testUser.ID)
 
-	// 测试正常删除
-	req := &user.DeleteReq{UserId: strconv.FormatUint(uint64(testUser.ID), 10)}
-	resp, err := s.Run(req)
-	assert.Nil(t, err)
-	assert.NotNil(t, resp)
-
-	// 测试删除不存在的用户
-	req = &user.DeleteReq{UserId: "99999"}
+	// 测试删除存在的用户
+	t.Log("\n测试场景3: 删除存在的用户")
+	req = &user.DeleteReq{
+		UserId: strconv.FormatUint(uint64(testUser.ID), 10),
+	}
+	t.Logf("请求参数: %+v", req)
 	resp, err = s.Run(req)
-	assert.NotNil(t, err)
-}
+	t.Logf("响应: %+v, 错误: %v", resp, err)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+	t.Log("用户删除成功")
 
-func TestDeleteService_DeleteUser(t *testing.T) {
-	ctx := context.Background()
-	s := NewDeleteService(ctx)
+	// 验证用户确实被删除
+	t.Log("\n测试场景4: 验证用户删除结果")
+	deletedUser, err := model.GetById(ctx, mysql.DB, strconv.FormatUint(uint64(testUser.ID), 10))
+	t.Logf("查询结果: %+v, 错误: %v", deletedUser, err)
+	assert.NoError(t, err)
+	assert.Nil(t, deletedUser)
+	t.Log("验证通过：用户已被成功删除")
 
-	// 先创建一个测试用户
-	testUser := &model.User{
-		Username: "deletetest2",
-		Email:    "deletetest2@example.com",
-		Phone:    "13800138002",
-	}
-	err := model.Create(ctx, mysql.DB, testUser)
-	assert.Nil(t, err)
-
-	// 测试正常删除
-	err = s.DeleteUser(ctx, int64(testUser.ID))
-	assert.Nil(t, err)
-
-	// 测试无效的用户ID
-	err = s.DeleteUser(ctx, 0)
-	assert.NotNil(t, err)
-
-	// 测试删除不存在的用户
-	err = s.DeleteUser(ctx, 99999)
-	assert.NotNil(t, err)
+	t.Log("=== 用户删除服务测试完成 ===")
 }

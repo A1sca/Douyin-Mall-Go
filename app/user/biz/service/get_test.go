@@ -8,10 +8,10 @@ import (
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/dal/mysql"
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/model"
 	user "github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/user"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestGet_Run(t *testing.T) {
+	t.Log("开始测试用户获取服务")
 	ctx := context.Background()
 	s := NewGetService(ctx)
 
@@ -22,74 +22,32 @@ func TestGet_Run(t *testing.T) {
 		Phone:    "13800138003",
 	}
 	err := model.Create(ctx, mysql.DB, testUser)
-	assert.Nil(t, err)
+	if err != nil {
+		t.Fatalf("创建测试用户失败: %v", err)
+	}
+	t.Logf("成功创建测试用户: ID=%d, Username=%s", testUser.ID, testUser.Username)
 
-	// 测试正常获取
+	// 测试正常获取用户
+	t.Log("测试场景1: 正常获取用户信息")
 	req := &user.GetReq{UserId: strconv.FormatUint(uint64(testUser.ID), 10)}
+	t.Logf("请求参数: %+v", req)
 	resp, err := s.Run(req)
-	assert.Nil(t, err)
-	assert.NotNil(t, resp)
+	if err != nil {
+		t.Errorf("获取用户信息失败: %v", err)
+	} else {
+		t.Logf("获取用户信息成功: %+v", resp)
+	}
 
 	// 测试获取不存在的用户
+	t.Log("\n测试场景2: 获取不存在的用户")
 	req = &user.GetReq{UserId: "99999"}
+	t.Logf("请求参数: %+v", req)
 	resp, err = s.Run(req)
-	assert.NotNil(t, err)
-}
-
-func TestGetService_GetUser(t *testing.T) {
-	ctx := context.Background()
-	s := NewGetService(ctx)
-
-	// 创建测试用户
-	testUser := &model.User{
-		Username: "gettest2",
-		Email:    "gettest2@example.com",
-		Phone:    "13800138004",
+	if err != nil {
+		t.Logf("预期的错误: %v", err)
+	} else {
+		t.Error("期望获取不存在用户返回错误，但是成功了")
 	}
-	err := model.Create(ctx, mysql.DB, testUser)
-	assert.Nil(t, err)
 
-	// 测试正常获取
-	user, err := s.GetUser(ctx, int64(testUser.ID))
-	assert.Nil(t, err)
-	assert.Equal(t, testUser.Username, user.Username)
-
-	// 测试无效的用户ID
-	user, err = s.GetUser(ctx, 0)
-	assert.NotNil(t, err)
-	assert.Nil(t, user)
-
-	// 测试不存在的用户
-	user, err = s.GetUser(ctx, 99999)
-	assert.NotNil(t, err)
-	assert.Nil(t, user)
-}
-
-func TestGetService_GetUserByUsername(t *testing.T) {
-	ctx := context.Background()
-	s := NewGetService(ctx)
-
-	// 创建测试用户
-	testUser := &model.User{
-		Username: "gettest3",
-		Email:    "gettest3@example.com",
-		Phone:    "13800138005",
-	}
-	err := model.Create(ctx, mysql.DB, testUser)
-	assert.Nil(t, err)
-
-	// 测试正常获取
-	user, err := s.GetUserByUsername(ctx, testUser.Username)
-	assert.Nil(t, err)
-	assert.Equal(t, testUser.Username, user.Username)
-
-	// 测试空用户名
-	user, err = s.GetUserByUsername(ctx, "")
-	assert.NotNil(t, err)
-	assert.Nil(t, user)
-
-	// 测试不存在的用户名
-	user, err = s.GetUserByUsername(ctx, "nonexistentuser")
-	assert.NotNil(t, err)
-	assert.Nil(t, user)
+	t.Log("用户获取服务测试完成")
 }

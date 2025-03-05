@@ -81,3 +81,8 @@ func UpdateById(ctx context.Context, db *gorm.DB, id string, updates *User) erro
 	result := db.WithContext(ctx).Model(&User{}).Where("id = ?", id).Updates(updates)
 	return result.Error
 }
+
+// DeleteByName 通过用户名删除用户
+func DeleteByName(ctx context.Context, db *gorm.DB, username string) error {
+	return db.WithContext(ctx).Where("username = ?", username).Delete(&User{}).Error
+}

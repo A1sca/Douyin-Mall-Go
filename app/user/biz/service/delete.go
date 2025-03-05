@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"log"
 	"strconv"
 
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/dal/mysql"
@@ -21,6 +22,10 @@ func NewDeleteService(ctx context.Context) *DeleteService {
 
 // Run create note info
 func (s *DeleteService) Run(req *user.DeleteReq) (resp *user.DeleteResp, err error) {
+	defer func() {
+		log.Printf("[DeleteService] req = %+v", req)
+		log.Printf("[DeleteService] resp = %+v, err = %v", resp, err)
+	}()
 	// 检查用户是否存在
 	data, err := model.GetById(s.ctx, mysql.DB, req.UserId)
 	if err != nil {
@@ -29,7 +34,6 @@ func (s *DeleteService) Run(req *user.DeleteReq) (resp *user.DeleteResp, err err
 	if data == nil {
 		return nil, errors.New("user not found")
 	}
-
 	// 执行删除操作
 	err = model.DeleteById(s.ctx, mysql.DB, req.UserId)
 	if err != nil {

@@ -42,7 +42,7 @@ func (s *LoginService) Run(req *user.LoginReq) (resp *user.LoginResp, err error)
 	}
 
 	// 生成token
-	token, err := jwtutils.GenerateToken(strconv.FormatInt(int64(myUser.ID), 10))
+	token, err := jwtutils.GenerateToken(strconv.FormatInt(int64(myUser.ID), 10), myUser.Username)
 	if err != nil {
 		return nil, err
 	}

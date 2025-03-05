@@ -8,9 +8,16 @@ import (
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/dal/mysql"
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/model"
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/utils"
+	"github.com/A1sca/Douyin-Mall-Go/app/user/conf"
 	user "github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/user"
 	"github.com/stretchr/testify/assert"
 )
+
+func init() {
+	mysql.Init()
+	confPath := "/Users/kioshiro/程序/bytedanceProjects/MallGo/app/user/conf/test.yaml"
+	conf.Init(confPath)
+}
 
 func TestLogin_Run(t *testing.T) {
 	t.Log("开始登录服务测试...")

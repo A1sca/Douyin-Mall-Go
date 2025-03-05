@@ -15,7 +15,9 @@ func TestLogout_Run(t *testing.T) {
 	req := &user.LogoutReq{
 		UserId: "testuser123",
 	}
+	t.Logf("[测试场景1] 正常用户登出: %+v", req)
 	resp, err := s.Run(req)
+	t.Logf("[测试结果1] 响应: %+v, 错误: %v", resp, err)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 	assert.Equal(t, req.UserId, resp.UserId)
@@ -24,7 +26,9 @@ func TestLogout_Run(t *testing.T) {
 	req = &user.LogoutReq{
 		UserId: "",
 	}
+	t.Logf("[测试场景2] 空用户ID登出: %+v", req)
 	resp, err = s.Run(req)
+	t.Logf("[测试结果2] 响应: %+v, 错误: %v", resp, err)
 	assert.NotNil(t, err)
 	assert.Nil(t, resp)
-} 
+}

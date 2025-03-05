@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"log"
 	"strconv"
 
 	jwtutils "github.com/A1sca/Douyin-Mall-Go/app/auth/biz/utils"
@@ -23,6 +24,10 @@ func NewRegisterService(ctx context.Context) *RegisterService {
 
 // Run create note info
 func (s *RegisterService) Run(req *user.RegisterReq) (resp *user.RegisterResp, err error) {
+	defer func() {
+		log.Printf("[RegisterService] req = %+v", req)
+		log.Printf("[RegisterService] resp = %+v, err = %v", resp, err)
+	}()
 	if req.Username == "" || req.Password == "" {
 		return nil, errors.New("username or password cannot be empty")
 	}
@@ -54,7 +59,7 @@ func (s *RegisterService) Run(req *user.RegisterReq) (resp *user.RegisterResp, e
 	}
 
 	// 生成token
-	token, err := jwtutils.GenerateToken(strconv.FormatInt(int64(newUser.ID), 10))
+	token, err := jwtutils.GenerateToken(strconv.FormatInt(int64(newUser.ID), 10), newUser.Username)
 	if err != nil {
 		return nil, err
 	}

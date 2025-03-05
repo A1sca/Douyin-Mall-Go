@@ -48,11 +48,39 @@ type Kitex struct {
 
 type Registry struct {
 	RegistryAddress []string `yaml:"registry_address"`
-	Username        string   `yaml:"username"`
-	Password        string   `yaml:"password"`
 }
 
-// GetConf gets configuration instance
+// Init init config
+func Init(confPath string) {
+	once.Do(func() {
+		if confPath == "" {
+			wd, _ := os.Getwd()
+			confPath = filepath.Join(wd, "conf", "conf.yaml")
+		}
+
+		bytes, err := ioutil.ReadFile(confPath)
+		if err != nil {
+			panic(err)
+		}
+
+		conf = &Config{}
+		if err := yaml.Unmarshal(bytes, conf); err != nil {
+			panic(err)
+		}
+
+		if err := validator.Validate(conf); err != nil {
+			panic(err)
+		}
+
+		klog.Infof("config initialized: %# v", pretty.Formatter(conf))
+	})
+}
+
+// Get get config
+func Get() *Config {
+	return conf
+}
+
 func GetConf() *Config {
 	once.Do(initConf)
 	return conf

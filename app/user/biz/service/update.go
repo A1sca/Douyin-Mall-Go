@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"log"
 
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/dal/mysql"
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/model"
@@ -20,6 +21,10 @@ func NewUpdateService(ctx context.Context) *UpdateService {
 
 // Run create note info
 func (s *UpdateService) Run(req *user.UpdateReq) (resp *user.UpdateResp, err error) {
+	defer func() {
+		log.Printf("[UpdateService] req = %+v", req)
+		log.Printf("[UpdateService] resp = %+v, err = %v", resp, err)
+	}()
 	// 检查用户是否存在
 	existingUser, err := model.GetById(s.ctx, mysql.DB, req.UserId)
 	if err != nil {

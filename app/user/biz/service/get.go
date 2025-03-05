@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"log"
 	"strconv"
 
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/dal/mysql"
@@ -21,6 +22,10 @@ func NewGetService(ctx context.Context) *GetService {
 
 // Run create note info
 func (s *GetService) Run(req *user.GetReq) (resp *user.GetResp, err error) {
+	defer func() {
+		log.Printf("[GetService] req = %+v", req)
+		log.Printf("[GetService] resp = %+v, err = %v", resp, err)
+	}()
 	data, err := model.GetById(s.ctx, mysql.DB, req.UserId)
 	if err != nil {
 		return nil, err
@@ -29,9 +34,9 @@ func (s *GetService) Run(req *user.GetReq) (resp *user.GetResp, err error) {
 		return nil, errors.New("user not found")
 	}
 	return &user.GetResp{
-		UserId: strconv.FormatUint(uint64(data.ID), 10),
+		UserId:   strconv.FormatUint(uint64(data.ID), 10),
 		Username: data.Username,
-		Email: data.Email,
+		Email:    data.Email,
 	}, nil
 }
 
