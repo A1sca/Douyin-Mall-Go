@@ -7,7 +7,8 @@ import (
 
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/dal/mysql"
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/model"
-	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/utils"
+	utils "github.com/A1sca/Douyin-Mall-Go/app/user/biz/utils"
+	jwtutils "github.com/A1sca/Douyin-Mall-Go/app/auth/biz/utils"
 	user "github.com/A1sca/Douyin-Mall-Go/rpc_gen/kitex_gen/user"
 )
 
@@ -41,7 +42,7 @@ func (s *LoginService) Run(req *user.LoginReq) (resp *user.LoginResp, err error)
 	}
 
 	// 生成token
-	token, err := utils.GenerateToken(strconv.FormatInt(int64(myUser.ID), 10))
+	token, err := jwtutils.GenerateToken(strconv.FormatInt(int64(myUser.ID), 10))
 	if err != nil {
 		return nil, err
 	}

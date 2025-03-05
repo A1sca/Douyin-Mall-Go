@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strconv"
 
+	jwtutils "github.com/A1sca/Douyin-Mall-Go/app/auth/biz/utils"
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/dal/mysql"
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/model"
 	"github.com/A1sca/Douyin-Mall-Go/app/user/biz/utils"
@@ -42,9 +43,9 @@ func (s *RegisterService) Run(req *user.RegisterReq) (resp *user.RegisterResp, e
 	}
 
 	newUser := &model.User{
-		Username: req.Username,
+		Username:       req.Username,
 		PasswordHashed: hashedPassword,
-		Email:    req.Email,
+		Email:          req.Email,
 	}
 
 	err = model.Create(s.ctx, mysql.DB, newUser)
@@ -53,7 +54,7 @@ func (s *RegisterService) Run(req *user.RegisterReq) (resp *user.RegisterResp, e
 	}
 
 	// 生成token
-	token, err := utils.GenerateToken(strconv.FormatInt(int64(newUser.ID), 10))
+	token, err := jwtutils.GenerateToken(strconv.FormatInt(int64(newUser.ID), 10))
 	if err != nil {
 		return nil, err
 	}
